@@ -1,0 +1,7 @@
+
+# local environments / caches
+.venv/
+venv/
+__pycache__/
+.ipynb_checkpoints/
+*.pyc

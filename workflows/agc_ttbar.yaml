@@ -1,0 +1,96 @@
+workflow:
+  name: "cms_open_data_ttbar_two_schedulers_iterative"
+
+  artifacts:
+    fileset:    { uri: "fileset.json",           type: "json" }
+    manifest:   { uri: "manifest.json",          type: "json" }
+    partial_a:  { uri: "partials/part_A.pkl",    type: "pickle" }
+    partial_b:  { uri: "partials/part_B.pkl",    type: "pickle" }
+    merged:     { uri: "merged.pkl",             type: "pickle" }
+
+  steps:
+    # Step A: dataset/fileset construction (your notebook's construct_fileset)
+    datasets:
+      kind: dataset_creation
+      outputs: [fileset]
+      params:
+        fileset_factory: "agc_ttbar.entrypoints:make_fileset"
+        fileset_kwargs:
+          n_files_max_per_sample: 5            # N_FILES_MAX_PER_SAMPLE
+          use_xcache: false
+          af_name: ""                   # utils.config["benchmarking"]["AF_NAME"] (example)
+          input_from_eos: false                # utils.config["benchmarking"]["INPUT_FROM_EOS"]
+          xcache_atlas_prefix: ""              # utils.config["benchmarking"]["XCACHE_ATLAS_PREFIX"]
+
+    # Split work into two partitions
+    partition:
+      kind: partition_fileset
+      depends_on: [datasets]
+      inputs: [fileset]
+      outputs: [manifest]
+      params:
+        strategy: "split_half"                 # simple default: split each dataset's file list in half
+        partition_ids: ["A", "B"]
+
+    # Branch 1 (facility/scheduler label only for now)
+    run_sched_a:
+      kind: coffea_run
+      depends_on: [partition]
+      inputs: [manifest]
+      outputs: [partial_a]
+      params:
+        partition_id: "A"
+        treename: "Events"                     # notebook sets "Events" when not ServiceX
+        schema: "coffea.nanoevents:NanoAODSchema"
+
+        processor_factory: "agc_ttbar.entrypoints:make_processor"
+        processor_kwargs:
+          use_inference: true                  # USE_INFERENCE
+          use_triton: false                    # USE_TRITON
+
+        runner_kwargs:
+          chunksize: 100000                    # utils.config["benchmarking"]["CHUNKSIZE"] (example)
+          savemetrics: true
+          metadata_cache: {}
+
+      resources:
+        executor:
+          backend: "futures"                   # or "iterative" if you implement IterativeExecutor
+          workers: 1                           # utils.config["benchmarking"]["NUM_CORES"] (example)
+          scheduler_label: "SCHED_A"           # label only, for logs / future routing
+
+    # Branch 2 (second "scheduler" label)
+    run_sched_b:
+      kind: coffea_run
+      depends_on: [partition]
+      inputs: [manifest]
+      outputs: [partial_b]
+      params:
+        partition_id: "B"
+        treename: "Events"
+        schema: "coffea.nanoevents:NanoAODSchema"
+
+        processor_factory: "agc_ttbar.entrypoints:make_processor"
+        processor_kwargs:
+          use_inference: true
+          use_triton: false
+
+        runner_kwargs:
+          chunksize: 100000
+          savemetrics: true
+          metadata_cache: {}
+
+      resources:
+        executor:
+          backend: "futures"
+          workers: 1
+          scheduler_label: "SCHED_B"
+
+    # Merge
+    merge:
+      kind: merge_outputs
+      depends_on: [run_sched_a, run_sched_b]
+      inputs: [partial_a, partial_b]
+      outputs: [merged]
+      params:
+        merge_strategy: "coffea_accumulator"
