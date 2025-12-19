@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Set
 from ..ir import GraphIR
 from ..registry import get_handler
+import time
 
 @dataclass
 class LocalContext:
@@ -50,7 +51,26 @@ class LocalBackend:
         deps_map = {nid: n.deps for nid, n in graph.nodes.items()}
         for nid in _toposort(deps_map):
             node = graph.nodes[nid]
+
+            # print additional information
+            t0 = time.time()
+            print(f"\n==> STEP {node.id}  kind={node.kind}")
+            if getattr(node, "depends_on", None):
+                print(f"    depends_on: {node.depends_on}")
+            if getattr(node, "inputs", None):
+                ins = [f"{n} -> {ctx.artifacts[n]}" for n in node.inputs]
+                print(f"    inputs:  {', '.join(ins)}")
+            if getattr(node, "outputs", None):
+                outs = [f"{n} -> {ctx.artifacts[n]}" for n in node.outputs]
+                print(f"    outputs: {', '.join(outs)}")
+                
+            
             handler = get_handler(node.kind)
             handler(node, ctx)
 
+            
+            dt = time.time() - t0
+            print(f"    done in {dt:.2f}s")
+
         return artifact_paths
+        

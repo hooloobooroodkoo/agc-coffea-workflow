@@ -1,17 +1,16 @@
 # %%
 import sys, coffea, importlib.metadata as md, pathlib
 
-print("Python:", sys.version)
-print("sys.executable:", sys.executable)
+# print("Python:", sys.version)
+# print("sys.executable:", sys.executable)
 
-print("coffea.__version__:", getattr(coffea, "__version__", "n/a"))
-print("coffea imported from:", pathlib.Path(coffea.__file__).resolve())
+# print("coffea.__version__:", getattr(coffea, "__version__", "n/a"))
+# print("coffea imported from:", pathlib.Path(coffea.__file__).resolve())
 
-# installed distribution info (if it's a pip-installed dist)
-try:
-    print("pip dist version:", md.version("coffea"))
-except Exception as e:
-    print("md.version('coffea') failed:", e)
+# try:
+#     print("pip dist version:", md.version("coffea"))
+# except Exception as e:
+#     print("md.version('coffea') failed:", e)
 
 # %%
 import logging
@@ -30,7 +29,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyhf
 
-import utils  
+import utils
 
 class TtbarAnalysis(processor.ProcessorABC):
     def __init__(self, use_inference, use_triton):
@@ -49,7 +48,7 @@ class TtbarAnalysis(processor.ProcessorABC):
                 .Weight()
             )
         
-        self.cset = correctionlib.CorrectionSet.from_file("corrections.json")
+        self.cset = correctionlib.CorrectionSet.from_file("utils/corrections.json")
         self.use_inference = use_inference
         
         # set up attributes only needed if USE_INFERENCE=True

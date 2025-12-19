@@ -35,11 +35,9 @@ def make_fileset(
         ...
       }
     """
-    utils = utils_module
-    if utils is None:
-        import utils as utils  # type: ignore
+    from utils.file_input import construct_fileset
 
-    return utils.file_input.construct_fileset(
+    return construct_fileset(
         n_files_max_per_sample=n_files_max_per_sample,
         use_xcache=use_xcache,
         af_name=af_name,
@@ -72,17 +70,7 @@ def make_processor(use_inference: bool, use_triton: bool, *, utils_module: Any =
     TtbarAnalysis
         An initialized ProcessorABC implementation.
     """
-    # Ensure the notebook-style `utils` import works when called from a workflow runner
-    if utils_module is None:
-        import utils as _utils  # noqa: F401  # type: ignore
-    else:
-        # If you pass utils_module, your processor class must reference it.
-        # In the notebook, TtbarAnalysis refers to global `utils`, so we inject it.
-        import builtins
-        builtins.utils = utils_module  # type: ignore
 
-    # Importing here avoids import-time side effects unless the step is executed
-    # If TtbarAnalysis lives in a separate module, import it from there.
-    from .ttbar_processor import TtbarAnalysis  # <-- adjust path if needed
+    from .ttbar_processor import TtbarAnalysis
 
     return TtbarAnalysis(use_inference=use_inference, use_triton=use_triton)

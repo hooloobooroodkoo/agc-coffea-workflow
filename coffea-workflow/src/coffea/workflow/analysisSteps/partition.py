@@ -45,6 +45,15 @@ def run(node, ctx):
         {"partition_id": a_id, "fileset": partitions[a_id]},
         {"partition_id": b_id, "fileset": partitions[b_id]},
     ]
-
+    def _count_files(fs):
+        return sum(len(v.get("files", [])) for v in fs.values())
+    
+    print("    [partition_fileset] created partitions:")
+    for entry in manifest:
+        pid = entry["partition_id"]
+        n_ds = len(entry["fileset"])
+        n_files = _count_files(entry["fileset"])
+        print(f"      - {pid}: datasets={n_ds}, files={n_files}")
+        
     with open(out_manifest_path, "w") as f:
         json.dump(manifest, f, indent=2)

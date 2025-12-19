@@ -7,27 +7,31 @@ from coffea.workflow.config import load_workflow_config
 from coffea.workflow import to_ir
 from coffea.workflow.backends.local import LocalBackend
 
-# Ensure step handlers are registered (import side effects)
-import coffea.workflow.analysisSteps.dataset_creation  # noqa: F401
-import coffea.workflow.analysisSteps.partition         # noqa: F401
-import coffea.workflow.analysisSteps.coffea_run        # noqa: F401
-import coffea.workflow.analysisSteps.merge             # noqa: F401
+# analysisSteps handlers
+import coffea.workflow.analysisSteps.dataset_creation 
+import coffea.workflow.analysisSteps.partition 
+import coffea.workflow.analysisSteps.coffea_run  
+import coffea.workflow.analysisSteps.merge
 
 from pathlib import Path
 import sys
 
+# muted warnings
+from coffea.nanoevents import NanoAODSchema
+NanoAODSchema.warn_missing_crossrefs = False
+
 repo_root = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(repo_root))  # <-- add agc-dev/ to import path
+sys.path.insert(0, str(repo_root))  
 
 def main():
-    repo_root = Path(__file__).resolve().parents[1]  # agc-dev/
-    cfg_path = repo_root / "workflows" / "agc_ttbar.yaml"
-    workspace = repo_root / "workdir"
+    repo_root = Path(__file__).resolve().parents[1]  
+    cfg_path = repo_root / "agc-dev" / "agc_ttbar.yaml"
+    workspace = repo_root /  "agc-dev" / "workdir"
 
     with open(cfg_path, "r") as f:
         raw = yaml.safe_load(f)
 
-    cfg = load_workflow_config(raw)   # <-- expects dict
+    cfg = load_workflow_config(raw)
     graph = to_ir(cfg)
 
     backend = LocalBackend()

@@ -102,9 +102,9 @@ config = {
         # Triton model version which is trained on odd events
         "MODEL_VERSION_ODD": "1",
         # path to local model (trained on even events) if not using Triton
-        "XGBOOST_MODEL_PATH_EVEN": "models/model_even.json",
+        "XGBOOST_MODEL_PATH_EVEN": "utils/models/model_even.json",
         # path to local model (trained on odd events) if not using Triton
-        "XGBOOST_MODEL_PATH_ODD": "models/model_odd.json",
+        "XGBOOST_MODEL_PATH_ODD": "utils/models/model_odd.json",
         # histogram bin lower limit to use for each ML input feature
         "BIN_LOW": [
             0,
