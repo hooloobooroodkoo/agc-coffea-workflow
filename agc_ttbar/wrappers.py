@@ -37,14 +37,7 @@ def make_fileset(
     """
     from utils.file_input import construct_fileset
 
-    return construct_fileset(
-        n_files_max_per_sample=n_files_max_per_sample,
-        use_xcache=use_xcache,
-        af_name=af_name,
-        local_data_cache=local_data_cache,
-        input_from_eos=input_from_eos,
-        xcache_atlas_prefix=xcache_atlas_prefix,
-    )
+    return construct_fileset(n_files_max_per_sample=n_files_max_per_sample, use_xcache=use_xcache, af_name=af_name, local_data_cache=local_data_cache, input_from_eos=input_from_eos, xcache_atlas_prefix=xcache_atlas_prefix)
 
 
 def make_processor(use_inference: bool, use_triton: bool, *, utils_module: Any = None):
