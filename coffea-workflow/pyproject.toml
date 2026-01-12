@@ -120,6 +120,8 @@ dev = [
 
 #[project.entry-points."dask.sizeof"]
 #coffea = "coffea.sizeof:register"
+[tool.setuptools_scm]
+search_parent_directories = true
 
 [tool.hatch]
 version.source = "vcs"

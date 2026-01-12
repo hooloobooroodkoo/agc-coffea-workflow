@@ -11,7 +11,9 @@ from coffea.workflow.backends.local import LocalBackend
 import coffea.workflow.analysisSteps.dataset_creation 
 import coffea.workflow.analysisSteps.partition 
 import coffea.workflow.analysisSteps.coffea_run  
-import coffea.workflow.analysisSteps.merge
+import coffea.workflow.analysisSteps.merge 
+import coffea.workflow.analysisSteps.validate_histograms
+import coffea.workflow.analysisSteps.plot_histograms
 
 from pathlib import Path
 import sys
@@ -25,7 +27,7 @@ sys.path.insert(0, str(repo_root))
 
 def main():
     repo_root = Path(__file__).resolve().parents[1]  
-    cfg_path = repo_root / "agc-dev" / "agc_ttbar.yaml"
+    cfg_path = repo_root / "agc-dev" / "agc_ttbar_test.yaml"
     workspace = repo_root /  "agc-dev" / "workdir"
 
     with open(cfg_path, "r") as f:

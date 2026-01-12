@@ -1,0 +1,34 @@
+{
+  "status": "ok",
+  "merged": "/home/cms-jovyan/yana_coffea_workflow/agc-dev/workdir/merged.pkl",
+  "n_hists": 2,
+  "payload_keys": [
+    "nevents",
+    "hist_dict",
+    "ml_hist_dict"
+  ],
+  "problems": [],
+  "histograms": {
+    "4j1b": {
+      "type": "hist.Hist",
+      "axes": [
+        "observable",
+        "process",
+        "variation"
+      ],
+      "total": 189821.17360402457
+    },
+    "4j2b": {
+      "type": "hist.Hist",
+      "axes": [
+        "observable",
+        "process",
+        "variation"
+      ],
+      "total": 353999.88757287594
+    }
+  },
+  "how_to_proceed": {
+    "load_snippet": "import cloudpickle; out=cloudpickle.load(open('merged.pkl','rb')); hist_dict=out[0]['hist_dict']"
+  }
+}

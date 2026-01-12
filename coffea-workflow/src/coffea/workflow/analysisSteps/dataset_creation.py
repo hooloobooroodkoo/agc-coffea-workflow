@@ -12,7 +12,6 @@ def run(node, ctx):
     out_path = ctx.artifacts[out_name]
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
 
-    # Support either a literal fileset or a factory
     if "fileset" in node.params:
         fileset = node.params["fileset"]
     else:

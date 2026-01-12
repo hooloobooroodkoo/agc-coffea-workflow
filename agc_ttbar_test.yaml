@@ -7,7 +7,7 @@ workflow:
     partial_a:  { uri: "partials/part_A.pkl",    type: "pickle" }
     partial_b:  { uri: "partials/part_B.pkl",    type: "pickle" }
     merged:     { uri: "merged.pkl",             type: "pickle" }
-    validation: { uri: "validation.json",        type: "json"}
+    validation_report: { uri: "validation.json",        type: "json"}
     plot_dir:   { uri: "plots"}
     plot_index: { uri: "plots/index.md",         type: "md"}
 
@@ -35,64 +35,10 @@ workflow:
         strategy: "split_half"
         partition_ids: ["A", "B"]
 
-    # partition A
-    run_sched_a:
-      kind: coffea_run
-      depends_on: [partition]
-      inputs: [manifest]
-      outputs: [partial_a]
-      params:
-        partition_id: "A"
-        treename: "Events"
-        schema: "coffea.nanoevents:NanoAODSchema"
-
-        processor_factory: "agc_ttbar.wrappers:make_processor"
-        processor_kwargs:
-          use_inference: true
-          use_triton: false
-
-        runner_kwargs:
-          chunksize: 100000
-          savemetrics: true
-          metadata_cache: {}
-
-      resources:
-        executor:
-          backend: "futures"
-          workers: 1
-          scheduler_label: "SCHED_A"
-
-    # partition B
-    run_sched_b:
-      kind: coffea_run
-      depends_on: [partition]
-      inputs: [manifest]
-      outputs: [partial_b]
-      params:
-        partition_id: "B"
-        treename: "Events"
-        schema: "coffea.nanoevents:NanoAODSchema"
-
-        processor_factory: "agc_ttbar.wrappers:make_processor"
-        processor_kwargs:
-          use_inference: true
-          use_triton: false
-
-        runner_kwargs:
-          chunksize: 100000
-          savemetrics: true
-          metadata_cache: {}
-
-      resources:
-        executor:
-          backend: "futures"
-          workers: 1
-          scheduler_label: "SCHED_B"
-
-
+    # skip processor and use merged.pkl from previous run
     merge:
       kind: merge_outputs
-      depends_on: [run_sched_a, run_sched_b]
+      depends_on: [partition]
       inputs: [partial_a, partial_b]
       outputs: [merged]
       params:

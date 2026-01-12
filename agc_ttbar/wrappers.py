@@ -14,15 +14,10 @@ def make_fileset(
     utils_module: Any = None,
 ) -> Dict[str, Any]:
     """
-    Thin wrapper around AGC's utils.file_input.construct_fileset with a stable signature
-    for workflow configs.
-
-    Parameters mirror the underlying construct_fileset:
+    Thin wrapper around AGC's utils.file_input.construct_fileset.
+    Parameters:
       - n_files_max_per_sample: number of files per sample (or -1 for all)
       - use_xcache, af_name, local_data_cache, input_from_eos, xcache_atlas_prefix
-
-    utils_module:
-      If provided, used as `utils` (handy in notebooks/tests). Otherwise imports `utils`.
 
     Returns
     -------
@@ -44,19 +39,14 @@ def make_processor(use_inference: bool, use_triton: bool, *, utils_module: Any =
     """
     Factory returning the Processor instance for the AGC CMS Open Data ttbar analysis.
 
-    This is intentionally a thin wrapper so your workflow YAML can reference it as:
+    This is intentionally a thin wrapper so workflow YAML can reference it as:
       "agc_ttbar.entrypoints:make_processor"
 
-    Parameters
-    ----------
-    use_inference:
+    Parameters:
+      - use_inference:
         Enable ML inference path in the processor.
-    use_triton:
+      - use_triton:
         If inference is enabled, use NVIDIA Triton server for inference.
-
-    utils_module:
-        Optional injected `utils` module (handy for notebooks/tests). If not provided,
-        the local `utils` package is imported.
 
     Returns
     -------
@@ -67,3 +57,33 @@ def make_processor(use_inference: bool, use_triton: bool, *, utils_module: Any =
     from .ttbar_processor import TtbarAnalysis
 
     return TtbarAnalysis(use_inference=use_inference, use_triton=use_triton)
+
+
+def make_plots(*, payload: Any, merged_path: str, outputs: Dict[str, str], parameters: Dict, **kwargs):
+    """
+    Wrapper for plots producing
+
+    Expected:
+      outputs["plot_dir"]
+      outputs["plot_index"]
+    """
+    from utils.hist_plots import make_all_agc_example_plots
+
+    use_inference = bool(parameters.get("use_inference", False))
+
+    feature_names = parameters.get("feature_names")
+    if use_inference and not feature_names:
+        try:
+            import utils.config
+            feature_names = utils.config["ml"]["FEATURE_NAMES"]
+        except Exception:
+            feature_names = None
+
+    return make_all_agc_example_plots(
+        payload=payload,
+        merged_path=merged_path,
+        plot_dir=outputs["plot_dir"],
+        plot_index=outputs["plot_index"],
+        use_inference=use_inference,
+        feature_names=feature_names,
+    )
