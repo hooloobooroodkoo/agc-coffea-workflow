@@ -1,4 +1,61 @@
-# Coffea Workflow Prototype (AGC / ttbar example)
+# Coffea Workflow (AGC / ttbar example)
+
+---
+
+## Related repositories
+
+- **Coffea fork (contains `workflow` via submodule):** https://github.com/hooloobooroodkoo/coffea/tree/workflow-module  
+- **Workflow submodule repo:** https://github.com/hooloobooroodkoo/coffea-workflow  
+- **Upstream Coffea:** https://github.com/scikit-hep/coffea
+
+  
+
+## Running the AGC example (recommended: Coffea-Casa + mamba env)
+
+To avoid dependency/version issues, I run this example on **Coffea-Casa** and create a dedicated **mamba** environment with **Python 3.10**.
+
+### 1) Clone the example repo + Coffea fork (with workflow submodule)
+
+> Note: `coffea.workflow` lives in a git submodule inside my Coffea fork.  
+> To get it, you must clone Coffea with `--recurse-submodules`.
+
+```bash
+git clone https://github.com/hooloobooroodkoo/agc-coffea-workflow
+git clone --recurse-submodules -b workflow-module \
+  https://github.com/hooloobooroodkoo/coffea.git coffea
+
+cd coffea
+git submodule update --init --recursive
+
+# sanity check: workflow package exists
+test -f src/coffea/workflow/__init__.py && echo "workflow present" || echo "workflow missing"
+```
+### 2) Create a mamba environment (Python 3.10) and install dependencies
+
+```bash
+cd ../agc-coffea-workflow
+
+mamba create -n agc310 python=3.10 -y
+mamba run -n agc310 python -m pip install -U pip setuptools wheel
+mamba run -n agc310 python -m pip install -r requirements.txt
+```
+
+### 3) Install the Coffea fork (editable) into the same environment
+
+```bash
+cd ../coffea
+mamba run -n agc310 bash -lc 'python -m  pip install .'
+# if you need editable coffea
+# mamba run -n agc310 bash -lc 'python -m pip install -e .'
+
+# quick import test
+mamba run -n agc310 python -c "import coffea; import coffea.workflow; print('OK:', coffea.__file__)"
+```
+### 4) Run the example
+```bash
+cd ../agc-coffea-workflow
+mamba run -n agc310 python run_workflow.py
+```
 
 ---
 
