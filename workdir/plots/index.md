@@ -1,6 +1,6 @@
 # Plots
 
-- merged: `/home/cms-jovyan/yana_coffea_workflow/agc-dev/workdir/merged.pkl`
+- merged: `/home/cms-jovyan/test_install/agc-coffea-workflow/workdir/merged.pkl`
 
 
 ## Gallery

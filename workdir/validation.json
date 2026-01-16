@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "merged": "/home/cms-jovyan/yana_coffea_workflow/agc-dev/workdir/merged.pkl",
+  "merged": "/home/cms-jovyan/test_install/agc-coffea-workflow/workdir/merged.pkl",
   "n_hists": 2,
   "payload_keys": [
     "nevents",

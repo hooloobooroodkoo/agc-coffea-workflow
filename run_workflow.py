@@ -27,8 +27,8 @@ sys.path.insert(0, str(repo_root))
 
 def main():
     repo_root = Path(__file__).resolve().parents[1]  
-    cfg_path = repo_root / "agc-dev" / "agc_ttbar_test.yaml"
-    workspace = repo_root /  "agc-dev" / "workdir"
+    cfg_path = repo_root / "agc-coffea-workflow" / "agc_ttbar.yaml"
+    workspace = repo_root /  "agc-coffea-workflow" / "workdir"
 
     with open(cfg_path, "r") as f:
         raw = yaml.safe_load(f)
